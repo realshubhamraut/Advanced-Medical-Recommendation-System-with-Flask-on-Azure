@@ -1,0 +1,17 @@
+flask
+scikit-learn
+joblib
+seaborn
+torch
+torchvision
+matplotlib
+numpy
+pandas
+mlxtend
+torch-summary
+split-folders
+tqdm
+kaggle
+kagglehub
+tabulate
+opencv-python

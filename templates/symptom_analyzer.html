@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Medical Recommendation System{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Medical Recommendation Section -->
+  <div class="jumbotron text-center">
+    <h1 class="display-4">Symptom Analyzer </h1>
+    <p class="lead">Enter symptoms to get an instant disease predictions with ML.</p>
+  </div>
+  
+  <div class="card mb-4">
+    <div class="card-body">
+      <form action="/predict" method="post">
+        <div class="form-group">
+          <label for="symptoms">Symptoms (comma separated):</label>
+          <div class="input-group">
+            <input id="symptoms" name="symptoms" type="text" class="form-control autocomplete-input" placeholder="Start typing a symptom...">
+            <div class="input-group-append">
+              <button type="button" id="show-all-symptoms" class="btn btn-outline-secondary">&#x25BC;</button>
+            </div>
+          </div>
+        </div>
+        <button type="submit" name="action" value="predict" class="btn btn-primary">Predict</button>
+      </form>
+    </div>
+  </div>
+  
+  {% if message %}
+    <div class="alert alert-danger">{{ message }}</div>
+  {% endif %}
+  
+  {% if predicted_disease %}
+    <!-- Display Prediction Results -->
+    <div class="card mb-4">
+      <div class="card-header">
+        Predicted Disease: <strong>{{ predicted_disease }}</strong>
+      </div>
+      <div class="card-body">
+        <p><strong>Description:</strong> {{ dis_des }}</p>
+        <p><strong>Precautions:</strong> {{ my_precautions|join(', ') }}</p>
+        <p><strong>Medications:</strong> {{ medications|join(', ') }}</p>
+        <p><strong>Diet Recommendation:</strong> {{ my_diet|join(', ') }}</p>
+        <p><strong>Workout:</strong> {{ workout|join(', ') }}</p>
+      </div>
+    </div>
+    
+    <!-- Optional Download Module -->
+    <div class="divider"></div>
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="mb-3">Optional: Enter your details for a detailed report</h5>
+        <form action="/download" method="post">
+          <div class="form-row">
+            <div class="form-group col-md-3">
+              <label for="name">Full Name</label>
+              <input id="name" name="name" type="text" class="form-control" placeholder="Enter your name">
+            </div>
+            <div class="form-group col-md-3">
+              <label for="mobile">Mobile Number</label>
+              <input id="mobile" name="mobile" type="text" class="form-control" placeholder="Enter your mobile">
+            </div>
+            <div class="form-group col-md-3">
+              <label for="age">Age</label>
+              <input id="age" name="age" type="number" class="form-control" placeholder="Enter your age">
+            </div>
+            <div class="form-group col-md-3">
+              <label for="gender">Gender</label>
+              <select id="gender" name="gender" class="form-control">
+                <option value="" disabled selected>Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary">Download Report (PDF)</button>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  $(document).ready(function() {
+    function split(val) { return val.split(/,\s*/); }
+    function extractLast(term) { return split(term).pop(); }
+    
+    $("#symptoms")
+      .on("keydown", function(event) {
+        if (event.keyCode === $.ui.keyCode.TAB && $(this).autocomplete("instance").menu.active) {
+          event.preventDefault();
+        }
+      })
+      .autocomplete({
+        minLength: 0,
+        source: function(request, response) {
+          $.getJSON("/symptom-suggestions", { term: extractLast(request.term) }, response);
+        },
+        search: function() {
+          return true;
+        },
+        focus: function() { return false; },
+        select: function(event, ui) {
+          var terms = split(this.value);
+          terms.pop();
+          terms.push(ui.item.value);
+          terms.push("");
+          this.value = terms.join(", ");
+          return false;
+        }
+      });
+
+    $("#show-all-symptoms").on("click", function() {
+       $("#symptoms").autocomplete("search", "");
+    });
+  });
+</script>
+{% endblock %}

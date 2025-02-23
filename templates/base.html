@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Advanced Medical Recommendation System{% endblock %}</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- jQuery UI CSS -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <style>
+    body { background: #f8f9fa; }
+    /* Enhanced Navigation Header */
+    .navbar {
+      margin-bottom: 20px;
+      background-color: #caeea5; /* Light green background */
+      border-bottom: 2px solid #ccc; /* Bottom border */
+    }
+    .navbar-nav .nav-item {
+      border-right: 1px solid #ccc;
+      margin-right: 10px;
+      padding: 5px 10px;
+    }
+    .navbar-nav .nav-item:last-child {
+      border-right: none;
+      margin-right: 0;
+    }
+    .jumbotron { 
+      background: #007bff; 
+      color: #fff; 
+      padding: 2rem; 
+      margin-top: 2rem; 
+      border-radius: 0.5rem;
+    }
+    .autocomplete-input { 
+      margin-bottom: 1rem; 
+    }
+    .ui-autocomplete { 
+      max-height: 150px; 
+      overflow-y: auto; 
+      overflow-x: hidden; 
+    }
+    .divider { 
+      margin: 2rem 0; 
+      border-top: 2px solid #ddd; 
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- Navigation Header -->
+  <nav class="navbar navbar-expand-md navbar-light">
+    <a class="navbar-brand" href="/">Medical Recommendation System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:history.back()">Back</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content Container -->
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+  
+  <!-- jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

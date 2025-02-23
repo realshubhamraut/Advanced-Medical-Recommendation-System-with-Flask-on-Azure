@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block title %}AI Nutritionist{% endblock %}
+
+{% block extra_head %}
+  <style>
+    /* Custom styling for the file input container with solid border */
+    .custom-file {
+      border: 2px solid #007bff;
+      border-radius: 5px;
+      padding: 20px;
+      background-color: #f8f9fa;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .custom-file:hover {
+      border-color: #0056b3;
+      box-shadow: 0 0 5px rgba(0,123,255,0.5);
+    }
+    /* Hide the native file input and overlay it on the container */
+    .custom-file-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    /* Style the custom file label */
+    .custom-file-label {
+      font-weight: bold;
+      pointer-events: none;
+      margin-bottom: 0;
+    }
+    /* Style the analysis output box and any contained tables */
+    .analysis-output {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: monospace;
+      /* Make the output box broader */
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    .analysis-output table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+    .analysis-output th, .analysis-output td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: left;
+    }
+    .analysis-output th {
+      background-color: #007bff;
+      color: #fff;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="jumbotron text-center" style="background: #007bff; color: #fff; border-radius: 10px; padding: 50px 0; margin-top: 30px;">
+    <h1 class="display-4">Nutritional Analysis</h1>
+    <p class="lead">Upload an image of your meal and enter your details to get a nutritional analysis.</p>
+  </div>
+  
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form action="/al-nutritionist" method="post" enctype="multipart/form-data">
+        <!-- Upload Method Section -->
+        <div class="form-group">
+          <label for="uploadMethod"><strong>Choose Upload Method:</strong></label><br>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="upload_method" id="uploadPhoto" value="upload" checked>
+            <label class="form-check-label" for="uploadPhoto">Upload Photo</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="upload_method" id="takePicture" value="camera">
+            <label class="form-check-label" for="takePicture">Take a Picture</label>
+          </div>
+        </div>
+        
+        <!-- Meal Image Input -->
+        <div class="form-group position-relative">
+          <label for="mealImage">Meal Image <small class="text-muted">(JPEG, PNG)</small>:</label>
+          <div class="custom-file">
+            <input id="mealImage" name="meal_image" type="file" class="custom-file-input" accept="image/jpeg, image/png" required>
+            <span class="custom-file-label">Choose file</span>
+          </div>
+        </div>
+        
+        <!-- Additional Details -->
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <label for="age">Age</label>
+            <input id="age" name="age" type="number" class="form-control" placeholder="Enter your age" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" class="form-control" required>
+              <option value="" disabled selected>Select gender</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="physical_intensity">Physical Intensity</label>
+            <select id="physical_intensity" name="physical_intensity" class="form-control" required>
+              <option value="" disabled selected>Select intensity</option>
+              <option>Basal Metabolic Rate (BMR)</option>
+              <option>Sedentary: little or no exercise</option>
+              <option>Light: exercise 1-3 times/week</option>
+              <option>Moderate: exercise 4-5 times/week</option>
+              <option>Active: daily exercise or intense exercise 3-4 times/week</option>
+              <option>Very Active: intense exercise 6-7 times/week</option>
+              <option>Extra Active: very intense exercise daily or physical job</option>
+            </select>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="weight">Weight (kg)</label>
+            <input id="weight" name="weight" type="number" step="0.1" class="form-control" placeholder="e.g., 70" required>
+          </div>
+        </div>
+        
+        <!-- Height Inputs -->
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <label for="height_feet">Height (Feet)</label>
+            <input id="height_feet" name="height_feet" type="number" class="form-control" placeholder="Feet" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="height_inch">Height (Inches)</label>
+            <input id="height_inch" name="height_inch" type="number" class="form-control" placeholder="Inches" required>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Analyze Meal ‎ ‎  🍛</button>
+      </form>
+    </div>
+  </div>
+  
+  {% if nutritional_analysis %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-header">
+        Nutritional Analysis:
+      </div>
+      <div class="card-body">
+        <div class="analysis-output">
+          {{ nutritional_analysis|safe }}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    var mealImageInput = document.getElementById('mealImage');
+    mealImageInput.addEventListener('change', function(){
+      var fileName = this.value.split('\\').pop();
+      this.parentElement.querySelector('.custom-file-label').textContent = fileName || "Choose file";
+    });
+    
+    var uploadMethods = document.querySelectorAll('input[name="upload_method"]');
+    uploadMethods.forEach(function(radio) {
+      radio.addEventListener('change', function(){
+        if(this.value === 'camera'){
+          mealImageInput.setAttribute('capture', 'environment');
+        } else {
+          mealImageInput.removeAttribute('capture');
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

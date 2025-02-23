@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Medical Recommendation System</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- jQuery UI CSS -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <style>
+    body { 
+      background: #f8f9fa; 
+    }
+    .header-section {
+      background: #007bff;
+      color: #fff;
+      text-align: center;
+      padding: 50px 0;
+      border-radius: 10px;
+      margin-top: 30px;
+    }
+    .header-section h1 {
+      font-size: 3.2rem;
+      margin: 0;
+    }
+    .gallery {
+      margin-top: 50px;
+    }
+    .gallery .card {
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+    .gallery .card:hover {
+      transform: scale(1.05);
+    }
+    .gallery .card-img-top {
+      display: block;
+      width: 100%;
+      border-bottom: 1px solid #000;
+    }
+    .gallery .card-body {
+      text-align: center;
+      padding: 20px;
+      border: 1px solid #000;
+      border-top: none;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+    .gallery .card-title {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+    .gallery .card-text {
+      font-size: 1rem;
+      color: #555;
+    }
+    .footer-buttons {
+      margin: 50px 0;
+      text-align: center;
+    }
+    .footer-buttons a {
+      border: 1px solid #000;
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+      margin: 0 10px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .footer-buttons a:hover {
+      background-color: #000;
+      color: #fff;
+    }
+    .footer-buttons a img {
+      margin-right: 8px;
+      height: 30px;
+      width: 40px;
+    }
+    .vertical-divider {
+      border-left: 1px solid #000;
+      height: 40px;
+      margin: 0 8px;
+    }
+    /* Limit jQuery UI autocomplete menu height to show around 5 items */
+    .ui-autocomplete {
+      max-height: 200px; /* Adjust as needed; approximately 5 items */
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header-section">
+      <h1>Advanced Medical Recommendation System</h1>
+    </div>
+
+    <!-- Gallery Options -->
+    <div class="gallery mt-5">
+      <div class="row">
+        <!-- Option 1: Symptom Analyzer -->
+        <div class="col-md-6 mb-4">
+          <a href="/symptom-analyzer" style="text-decoration: none; color: inherit;">
+            <div class="card">
+              <img src="{{ url_for('static', filename='docs/symptom.png') }}" class="card-img-top" alt="Symptom Analyzer">
+              <div class="card-body">
+                <h5 class="card-title">Symptom Analyzer</h5>
+                <p class="card-text">Analyze your symptoms to predict the disease with AI</p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <!-- Option 2: X-Ray Analysis -->
+        <div class="col-md-6 mb-4">
+          <a href="/analyze-xray" style="text-decoration: none; color: inherit;">
+            <div class="card">
+              <img src="{{ url_for('static', filename='docs/xray.png') }}" class="card-img-top" alt="X-Ray Analysis">
+              <div class="card-body">
+                <h5 class="card-title">Analyze the X-RAY</h5>
+                <p class="card-text">Predict the tumor, pneumonia, cancer, and so on...</p>
+              </div>
+            </div> 
+          </a>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Option 3: AI Nutritionist -->
+        <div class="col-md-6 mb-4">
+          <a href="/al-nutritionist" style="text-decoration: none; color: inherit;">
+            <div class="card">
+              <img src="{{ url_for('static', filename='docs/diet.png') }}" class="card-img-top" alt="AI Nutritionist">
+              <div class="card-body">
+                <h5 class="card-title">AI Nutritionist</h5>
+                <p class="card-text">Know what you are consuming with AI</p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <!-- Option 4: MediChat -->
+        <div class="col-md-6 mb-4">
+          <a href="/medichat" style="text-decoration: none; color: inherit;">
+            <div class="card">
+              <img src="{{ url_for('static', filename='docs/bot.png') }}" class="card-img-top" alt="MediChat">
+              <div class="card-body">
+                <h5 class="card-title">MediChat</h5>
+                <p class="card-text">Chat with a health encyclopedia and medical books</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="footer-buttons">
+      <a href="https://github.com/realshubhamraut/Advanced-Medical-Recommendation-System-with-Flask-on-Azure" target="_blank">
+        <img src="{{ url_for('static', filename='docs/github.svg') }}" alt="GitHub Logo">
+        <span class="vertical-divider"></span>
+        GitHub
+      </a>
+      <a href="https://www.linkedin.com/in/contactshubhamraut/" target="_blank">
+        <img src="{{ url_for('static', filename='docs/linkedin.svg') }}" alt="LinkedIn Logo">
+        <span class="vertical-divider"></span>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+
+  <!-- jQuery, jQuery UI, and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
