@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}MediChat{% endblock %}
+
+{% block extra_head %}
+  <style>
+    /* Header section similar to analyze_xray & ai_nutritionist modules */
+    .jumbotron-custom {
+      background: #007bff;
+      color: #fff;
+      padding: 50px 0;
+      border-radius: 10px;
+      margin-top: 30px;
+      text-align: center;
+    }
+    .card-custom, .table {
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+    /* Mark down output similar styling for answer box */
+    .markdown-output {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      font-family: monospace;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Header Jumbotron -->
+  <div class="jumbotron jumbotron-custom">
+    <h1 class="display-4">MediChat</h1>
+    <p class="lead">Interact with our medical chatbot and get insights from your documents.</p>
+  </div>
+  
+  <!-- Chat Form -->
+  <div class="card card-custom mb-4">
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('medichat.medichat') }}">
+        <div class="form-group">
+          <label for="query"><strong>Enter your query:</strong></label>
+          <input type="text" class="form-control" id="query" name="query" placeholder="Type your question here..." required>
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Latest Response -->
+  {% if answer %}
+  <div class="card card-custom mb-4">
+    <div class="card-header" style="background-color: #007bff; color: #fff;">
+      Response
+    </div>
+    <div class="card-body">
+      <div class="markdown-output">
+        {{ answer | safe }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  
+  <!-- Source Documents Metadata -->
+  {% if docs %}
+  <div class="card card-custom mb-4">
+    <div class="card-header" style="background-color: #007bff; color: #fff;">
+      Source Documents Metadata
+    </div>
+    <div class="card-body">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Document ID</th>
+            <th>Source</th>
+            <th>Producer</th>
+            <th>Author</th>
+            <th>Page</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for doc in docs %}
+          <tr>
+            <td>{{ doc.id if doc.id is defined else 'N/A' }}</td>
+            <td>{{ doc.metadata.source if doc.metadata.get('source') else 'N/A' }}</td>
+            <td>{{ doc.metadata.producer if doc.metadata.get('producer') else 'N/A' }}</td>
+            <td>{{ doc.metadata.author if doc.metadata.get('author') else 'N/A' }}</td>
+            <td>{{ doc.metadata.page if doc.metadata.get('page') else 'N/A' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+  
+  <!-- Conversation History -->
+  {% if messages %}
+  <div class="card card-custom mb-4">
+    <div class="card-header" style="background-color: #007bff; color: #fff;">
+      Conversation History
+    </div>
+    <div class="card-body">
+      <ul class="list-group">
+        {% for msg in messages %}
+          <li class="list-group-item">
+            <strong>{{ msg.role|capitalize }}:</strong> {{ msg.content }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

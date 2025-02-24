@@ -1,10 +1,11 @@
+# main.py
 from flask import Flask, render_template
 
 # Import blueprints from each module.
 from symptom_analyzer import symptom_analyzer_bp
 from analyze_xray import analyze_xray_bp
 from ai_nutritionist import ai_nutritionist_bp
-from medichat import medichat_bp
+from medichat import medichat_bp  # newly added module
 
 app = Flask(__name__)
 app.secret_key = "your-secret-key"
@@ -13,7 +14,7 @@ app.secret_key = "your-secret-key"
 app.register_blueprint(symptom_analyzer_bp)
 app.register_blueprint(analyze_xray_bp)
 app.register_blueprint(ai_nutritionist_bp)
-app.register_blueprint(medichat_bp)
+app.register_blueprint(medichat_bp)  # now available at /medichat
 
 @app.route("/")
 def index():
