@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+  <style>
+    .jumbotron-custom {
+      background: #007bff;
+      color: #fff;
+      padding: 50px 0;
+      border-radius: 10px;
+      margin-top: 30px;
+      text-align: center;
+    }
+    .card-custom {
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+    }
+    .card-header-custom {
+      background-color: #007bff;
+      color: #fff;
+    }
+    .form-control, .btn-primary {
+      border-radius: 5px;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+    /* Style for rendered markdown output */
+    .markdown-output {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 5px;
+      white-space: normal;
+      font-family: sans-serif;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}Analyze X-Ray - AI Medical Diagnostic{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <!-- Jumbotron Header -->
+  <div class="jumbotron jumbotron-custom">
+    <h1 class="display-4">Analyze Medical Image</h1>
+    <p class="lead">Upload an image (MRI, X-ray, or skin lesion), select a model for analysis, & optionally enter symptoms for AI-based insights.</p>
+  </div>
+
+  <!-- Input Form -->
+  <div class="card card-custom mb-4">
+    <div class="card-body">
+      <form method="POST" action="/analyze-xray" enctype="multipart/form-data">
+        <!-- Model Selection -->
+        <div class="form-group">
+          <label for="modelSelector"><strong>Select Analysis Type:</strong></label>
+          <select class="form-control" id="modelSelector" name="model_type" required>
+            <option value="" disabled selected hidden>Select a Model</option>
+            <option value="skin_cancer" {% if selected_model == 'skin_cancer' %}selected{% endif %}>Skin Cancer</option>
+            <option value="brain_tumor" {% if selected_model == 'brain_tumor' %}selected{% endif %}>Brain Tumor</option>
+            <option value="pneumonia" {% if selected_model == 'pneumonia' %}selected{% endif %}>Pneumonia</option>
+          </select>
+        </div>
+
+        <!-- File Upload -->
+        <div class="form-group">
+          <label for="xrayFile"><strong>Upload Image (JPG/PNG):</strong></label>
+          <input type="file" class="form-control-file" id="xrayFile" name="xray_image" accept="image/*" required>
+        </div>
+
+        <!-- Optional Symptoms -->
+        <div class="form-group">
+          <label for="symptomsText"><strong>Symptoms (Optional):</strong></label>
+          <textarea class="form-control" id="symptomsText" name="symptoms_text" rows="3" placeholder="Describe any symptoms...">{{ request.form.symptoms_text or '' }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Analyze</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Prediction Results -->
+  {% if predicted_class %}
+    <div class="card card-custom mb-4">
+      <div class="card-header card-header-custom"><strong>Prediction Result</strong></div>
+      <div class="card-body">
+        <p><strong>Predicted Class:</strong> {{ predicted_class }}</p>
+        {% if predictions %}
+          <h5>Prediction Probabilities:</h5>
+          <ul>
+            {% for category, prob in predictions.items() %}
+              <li>{{ category }}: {{ (prob * 100) | round(2) }}%</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- AI Diagnostic Suggestion rendered as HTML from markdown -->
+  {% if ai_diagnostic %}
+    <div class="card card-custom mb-4">
+      <div class="card-header card-header-custom"><strong>AI Diagnostic Suggestion</strong></div>
+      <div class="card-body">
+        <div class="markdown-output">
+          {{ ai_diagnostic | safe }}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  // Update file input label with chosen file name
+  document.addEventListener('DOMContentLoaded', function() {
+    var xrayInput = document.getElementById('xrayFile');
+    xrayInput.addEventListener('change', function() {
+      var fileName = this.value.split('\\').pop();
+      this.nextElementSibling.textContent = fileName || "Choose Image";
+    });
+  });
+</script>
+{% endblock %}
