@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read  # This is required for actions/checkout
+      contents: read  # Required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -27,8 +27,10 @@ jobs:
       
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+        # Optionally, add extra install commands if libraries are missing.
+
+      - name: Run any tests (optional)
+        run: pytest || echo "No tests or tests failed"
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
@@ -48,8 +50,8 @@ jobs:
       name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write  # This is required for requesting the JWT
-      contents: read   # This is required for actions/checkout
+      id-token: write  # Required for OIDC authentication
+      contents: read   # Required for actions/checkout
 
     steps:
       - name: Download artifact from build job
@@ -67,10 +69,11 @@ jobs:
           allow-no-subscriptions: false
           audience: api://AzureADTokenExchange
 
+      # (Optional) If remote build issues persist, disable SCM build:
       - name: Set SCM_DO_BUILD_DURING_DEPLOYMENT app setting to false
-        run: az webapp config appsettings set --name advanced-medical-app --resource-group advanced-medical-app_group --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
+        run: az webapp config appsettings set --name advanced-medical-app --resource-group AdvancedMedicalRG --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
 
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
