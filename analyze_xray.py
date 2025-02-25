@@ -10,16 +10,12 @@ from flask import Blueprint, request, render_template
 import torchvision.transforms as transforms
 import google.generativeai as genai
 from dotenv import load_dotenv
-import markdown  # to convert markdown text to HTML
+import markdown 
 
-# Load environment variables and configure Google Gemini
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-###################################################
-# MODEL ARCHITECTURE DEFINITIONS
-###################################################
-# Skin Cancer Model (example architecture)
+
 class CNN_SKIN_CANCER(nn.Module):
     def __init__(self):
         super(CNN_SKIN_CANCER, self).__init__()
@@ -37,7 +33,6 @@ class CNN_SKIN_CANCER(nn.Module):
         x = self.fc2(x)
         return x
 
-# Brain Tumor Model matching your checkpoint (expects input 256x256)
 class CNN_TUMOR(nn.Module):
     def __init__(self):
         super(CNN_TUMOR, self).__init__()
@@ -63,7 +58,6 @@ class CNN_TUMOR(nn.Module):
         x = self.fc2(x)
         return x
 
-# Pneumonia Model (same as in pneumonia.ipynb)
 class PneumoniaResnet(nn.Module):
     def __init__(self):
         super(PneumoniaResnet, self).__init__()
@@ -82,13 +76,10 @@ class PneumoniaResnet(nn.Module):
         x = self.fc2(x)
         return x
 
-# Make PneumoniaResnet available in __main__ for pickle lookup
 import __main__
 __main__.PneumoniaResnet = PneumoniaResnet
 
-###################################################
-# TRANSFORMS
-###################################################
+
 default_transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
@@ -100,22 +91,18 @@ tumor_transform = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-###################################################
-# MODEL LOADING
-###################################################
-# For Brain Tumor:
+
 brain_tumor_model = CNN_TUMOR()
 brain_tumor_weights_path = "models/brain_tumor/weights.pt"
 brain_tumor_model.load_state_dict(torch.load(brain_tumor_weights_path, map_location="cpu"))
 brain_tumor_model.eval()
 
-# For Skin Cancer: TorchScript model
+
 skin_cancer_weights_path = "models/skin_cancer/skin_cancer.pt"
 skin_cancer_model = torch.jit.load(skin_cancer_weights_path, map_location="cpu")
 skin_cancer_model.eval()
 
-# For Pneumonia:
-# Load the weights from the .pt file (ignore any complete model file)
+
 pneumonia_weights_path = "models/Pneumonia/weights.pth"
 pneumonia_state = torch.load(pneumonia_weights_path, map_location="cpu")
 if isinstance(pneumonia_state, dict):
@@ -125,11 +112,9 @@ if isinstance(pneumonia_state, dict):
         new_key = k[len("network."):] if k.startswith("network.") else k
         if new_key in target_state:
             new_state[new_key] = v
-    # Fix conv1.weight if there is a size mismatch:
     if 'conv1.weight' in new_state and new_state['conv1.weight'].shape == torch.Size([64, 3, 7, 7]) \
        and target_state['conv1.weight'].shape == torch.Size([16, 3, 3, 3]):
         conv1_w = new_state['conv1.weight']
-        # Crop center 3x3 from each 7x7 kernel and take the first 16 filters
         conv1_w_adjusted = conv1_w[:16, :, 2:5, 2:5]
         new_state['conv1.weight'] = conv1_w_adjusted
     pneumonia_model = PneumoniaResnet()
@@ -138,9 +123,6 @@ else:
     pneumonia_model = pneumonia_state
 pneumonia_model.eval()
 
-###################################################
-# DEFINE CATEGORIES
-###################################################
 skin_cancer_categories = [
     "actinic keratosis", "basal cell carcinoma", "dermatofibroma",
     "melanoma", "nevus", "pigmented benign keratosis",

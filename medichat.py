@@ -12,10 +12,8 @@ load_dotenv(find_dotenv())
 
 medichat_bp = Blueprint('medichat', __name__, template_folder='templates')
 
-# Path to the FAISS vector store created by memory creation script.
 DB_FAISS_PATH = "vectorstore/db_faiss"
 
-# Cache the vectorstore in a global variable.
 _vectorstore = None
 def get_vectorstore():
     global _vectorstore
@@ -37,7 +35,6 @@ def load_llm(huggingface_repo_id, HF_TOKEN):
     )
     return llm
 
-# Custom prompt template.
 CUSTOM_PROMPT_TEMPLATE = """
 Use the pieces of information provided in the context to answer user's question.
 If you dont know the answer, just say that you dont know, dont try to make up an answer. 
@@ -51,7 +48,6 @@ Start the answer directly. No small talk please.
 
 @medichat_bp.route('/medichat', methods=["GET", "POST"])
 def medichat():
-    # Initialize conversation history if not present.
     if "messages" not in session:
         session["messages"] = []
     

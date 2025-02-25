@@ -25,7 +25,6 @@
       background-color: #007bff;
       border-color: #007bff;
     }
-    /* Style for rendered markdown output */
     .markdown-output {
       background: #e9ecef;
       padding: 15px;
@@ -40,17 +39,14 @@
 
 {% block content %}
 <div class="container mt-5">
-  <!-- Jumbotron Header -->
   <div class="jumbotron jumbotron-custom">
     <h1 class="display-4">Analyze Medical Image</h1>
     <p class="lead">Upload an image (MRI, X-ray, or skin lesion), select a model for analysis, & optionally enter symptoms for AI-based insights.</p>
   </div>
 
-  <!-- Input Form -->
   <div class="card card-custom mb-4">
     <div class="card-body">
       <form method="POST" action="/analyze-xray" enctype="multipart/form-data">
-        <!-- Model Selection -->
         <div class="form-group">
           <label for="modelSelector"><strong>Select Analysis Type:</strong></label>
           <select class="form-control" id="modelSelector" name="model_type" required>
@@ -61,13 +57,11 @@
           </select>
         </div>
 
-        <!-- File Upload -->
         <div class="form-group">
           <label for="xrayFile"><strong>Upload Image (JPG/PNG):</strong></label>
           <input type="file" class="form-control-file" id="xrayFile" name="xray_image" accept="image/*" required>
         </div>
 
-        <!-- Optional Symptoms -->
         <div class="form-group">
           <label for="symptomsText"><strong>Symptoms (Optional):</strong></label>
           <textarea class="form-control" id="symptomsText" name="symptoms_text" rows="3" placeholder="Describe any symptoms...">{{ request.form.symptoms_text or '' }}</textarea>
@@ -78,7 +72,6 @@
     </div>
   </div>
 
-  <!-- Prediction Results -->
   {% if predicted_class %}
     <div class="card card-custom mb-4">
       <div class="card-header card-header-custom"><strong>Prediction Result</strong></div>
@@ -96,7 +89,6 @@
     </div>
   {% endif %}
 
-  <!-- AI Diagnostic Suggestion rendered as HTML from markdown -->
   {% if ai_diagnostic %}
     <div class="card card-custom mb-4">
       <div class="card-header card-header-custom"><strong>AI Diagnostic Suggestion</strong></div>
@@ -110,7 +102,6 @@
 </div>
 
 <script>
-  // Update file input label with chosen file name
   document.addEventListener('DOMContentLoaded', function() {
     var xrayInput = document.getElementById('xrayFile');
     xrayInput.addEventListener('change', function() {

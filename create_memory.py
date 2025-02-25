@@ -6,7 +6,6 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
-# Update the path to your PDF data folder.
 DATA_PATH = "datasets/pdf/"
 
 def load_pdf_files(data):
@@ -32,7 +31,6 @@ def get_embedding_model():
 
 embedding_model = get_embedding_model()
 
-# Path where vector storage will be saved.
 DB_FAISS_PATH = "vectorstore/db_faiss"
 db = FAISS.from_documents(text_chunks, embedding_model)
 db.save_local(DB_FAISS_PATH)

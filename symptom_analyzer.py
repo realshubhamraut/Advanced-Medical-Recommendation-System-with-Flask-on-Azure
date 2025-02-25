@@ -7,8 +7,7 @@ from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
-# Create a blueprint for the symptom analyzer module.
-# Set template_folder to 'templates' so Flask finds your HTML files.
+
 symptom_analyzer_bp = Blueprint('symptom_analyzer_bp', __name__, template_folder='templates')
 
 

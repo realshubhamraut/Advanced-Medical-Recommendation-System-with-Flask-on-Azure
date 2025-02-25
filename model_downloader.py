@@ -2,7 +2,6 @@ import os
 import requests
 
 def download_from_azure(blob_relative_path, local_path):
-    # Update the base URL with your storage account and container details.
     base_url = "https://storageforhealthmodels.blob.core.windows.net/models"
     url = f"{base_url}/{blob_relative_path}"
     print(f"Attempting to download from: {url}")
@@ -17,7 +16,6 @@ def download_from_azure(blob_relative_path, local_path):
         raise Exception(f"Failed to download {url}: HTTP {response.status_code}")
 
 def ensure_local_model(model_relative_path):
-    # Our local folder for models is "models" (kept as in current code)
     local_path = os.path.join(os.getcwd(), "models", model_relative_path)
     if not os.path.exists(local_path):
         print(f"{local_path} not found locally. Downloading from Azure...")

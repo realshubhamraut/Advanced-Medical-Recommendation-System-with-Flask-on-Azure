@@ -3,7 +3,6 @@
 
 {% block content %}
 <div class="container">
-  <!-- Medical Recommendation Section -->
   <div class="jumbotron text-center">
     <h1 class="display-4">Symptom Analyzer </h1>
     <p class="lead">Enter symptoms to get an instant disease predictions with ML.</p>
@@ -31,7 +30,6 @@
   {% endif %}
   
   {% if predicted_disease %}
-    <!-- Display Prediction Results -->
     <div class="card mb-4">
       <div class="card-header">
         Predicted Disease: <strong>{{ predicted_disease }}</strong>
@@ -45,7 +43,6 @@
       </div>
     </div>
     
-    <!-- Optional Download Module -->
     <div class="divider"></div>
     <div class="card mb-4">
       <div class="card-body">

@@ -4,7 +4,6 @@
 
 {% block extra_head %}
   <style>
-    /* Header section similar to analyze_xray & ai_nutritionist modules */
     .jumbotron-custom {
       background: #007bff;
       color: #fff;
@@ -20,7 +19,6 @@
       background-color: #007bff;
       border-color: #007bff;
     }
-    /* Mark down output similar styling for answer box */
     .markdown-output {
       background: #e9ecef;
       padding: 15px;
@@ -33,13 +31,11 @@
 
 {% block content %}
 <div class="container">
-  <!-- Header Jumbotron -->
   <div class="jumbotron jumbotron-custom">
     <h1 class="display-4">MediChat</h1>
     <p class="lead">Interact with our medical chatbot and get insights from your documents.</p>
   </div>
   
-  <!-- Chat Form -->
   <div class="card card-custom mb-4">
     <div class="card-body">
       <form method="POST" action="{{ url_for('medichat.medichat') }}">
@@ -52,7 +48,6 @@
     </div>
   </div>
   
-  <!-- Latest Response -->
   {% if answer %}
   <div class="card card-custom mb-4">
     <div class="card-header" style="background-color: #007bff; color: #fff;">
@@ -66,7 +61,6 @@
   </div>
   {% endif %}
   
-  <!-- Source Documents Metadata -->
   {% if docs %}
   <div class="card card-custom mb-4">
     <div class="card-header" style="background-color: #007bff; color: #fff;">
@@ -99,7 +93,6 @@
   </div>
   {% endif %}
   
-  <!-- Conversation History -->
   {% if messages %}
   <div class="card card-custom mb-4">
     <div class="card-header" style="background-color: #007bff; color: #fff;">
