@@ -150,11 +150,11 @@ Commit the workflow file, and every push to the main branch will trigger an auto
 
 
 ---
-and finally issues and improvements / pull requests are always welcomed
+and finally issues and improvements / pull requests are always welcomed.
 
 #### ⚠️ Disclaimer: 
 
-Important: This project is provided for experimental purposes only. I have only designed to explore the possibilities of integrating healthcare with AI. Always seek the advice of qualified medical professionals regarding any medical diagnosis or treatment. Do not solely rely on the outputs of this system for clinical decisions.
+Important: This project is provided for experimental purposes only. and I have only designed it in a way to explore the possibilities of integrating healthcare with AI. Always seek the advice of qualified medical professionals regarding any medical diagnosis or treatment. Do not solely rely on the outputs of this repository for clinical decisions.
 
 ---
 *connect with me on [LinkedIn](https://www.linkedin.com/in/contactshubhamraut/) to develop something cool.*
