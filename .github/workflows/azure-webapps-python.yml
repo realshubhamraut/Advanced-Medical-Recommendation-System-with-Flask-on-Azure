@@ -67,6 +67,9 @@ jobs:
           allow-no-subscriptions: false
           audience: api://AzureADTokenExchange
 
+      - name: Set SCM_DO_BUILD_DURING_DEPLOYMENT app setting to false
+        run: az webapp config appsettings set --name advanced-medical-app --resource-group advanced-medical-app_group --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
+
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
