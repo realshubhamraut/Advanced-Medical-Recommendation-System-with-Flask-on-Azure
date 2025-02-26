@@ -31,16 +31,17 @@ jobs:
       - name: Run any tests (optional)
         run: pytest || echo "No tests or tests failed"
 
-      - name: Zip artifact for deployment
-        run: zip -r release.zip .  # Changed to include all files properly
+      - name: Create deployment package
+        run: |
+          # Remove unnecessary files before zipping
+          rm -rf venv __pycache__ *.pyc
+          zip -r release.zip .
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: |
-            release.zip
-            !venv/
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -68,26 +69,16 @@ jobs:
           allow-no-subscriptions: false
           audience: api://AzureADTokenExchange
 
-      # First, configure all the app settings
-      - name: Enable build during deployment
+      # Configure app settings and enable SCM_DO_BUILD_DURING_DEPLOYMENT
+      - name: Configure Azure Web App settings
         run: |
           az webapp config appsettings set --name advanced-medical-app --resource-group AdvancedMedicalRG --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true
-      
-      - name: Configure startup command
-        run: |
           az webapp config set --name advanced-medical-app --resource-group AdvancedMedicalRG --startup-file "gunicorn --bind=0.0.0.0 --timeout 600 main:app"
-      
-      - name: Enable AlwaysOn
-        run: |
           az webapp config set --name advanced-medical-app --resource-group AdvancedMedicalRG --always-on true
-      
-      # Critical: Add delay to prevent SCM container restart conflicts
-      - name: Wait for settings to apply
-        run: |
-          echo "Waiting 30 seconds for settings to apply..."
+          
+          # Wait for settings to apply
           sleep 30
 
-      # Now deploy
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
