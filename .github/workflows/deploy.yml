@@ -27,7 +27,7 @@ jobs:
       - name: Create deployment package
         run: |
           mkdir deploy
-          cp -r . deploy/
+          rsync -av --exclude='deploy' . deploy/
           cd deploy
           zip -r ../deployment.zip .
           cd ..
