@@ -1,4 +1,4 @@
-name: Build and Deploy advancedmedicalapp to Azure Web App (Run-From-Package)
+name: Build and Deploy advancedmedicalapp via Blob Storage (Run-From-Package)
 
 on:
   push:
@@ -21,20 +21,36 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Create deployment package
         run: |
           mkdir deploy
-          rsync -av --exclude='deploy' . deploy/
+          rsync -av --exclude='deploy' --exclude='.git' --exclude='tests' --exclude='*.log' . deploy/
           cd deploy
           zip -r ../deployment.zip .
           cd ..
       
-      - name: Deploy to Azure Web App using Run-From-Package
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'advancedmedicalapp'
-          package: './deployment.zip'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+      - name: Check Deployment Package Size
+        run: ls -lh deployment.zip
+
+      - name: Upload Deployment Package to Azure Blob Storage
+        env:
+          AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
+        run: |
+          az storage blob upload \
+            --account-name wsmedicalapp \
+            --container-name deployment \
+            --name deployment.zip \
+            --file deployment.zip \
+            --account-key "$AZURE_STORAGE_KEY" \
+            --overwrite
+
+      - name: Update Azure Web App Setting to Run From Package
+        run: |
+          PACKAGE_URL="https://wsmedicalapp.blob.core.windows.net/deployment/deployment.zip"
+          az webapp config appsettings set \
+            --resource-group advancedmedicalapp \
+            --name advancedmedicalapp \
+            --settings WEBSITE_RUN_FROM_PACKAGE="$PACKAGE_URL"
