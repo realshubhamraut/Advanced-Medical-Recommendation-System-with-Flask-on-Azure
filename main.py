@@ -7,7 +7,7 @@ from ai_nutritionist import ai_nutritionist_bp
 from medichat import medichat_bp 
 
 app = Flask(__name__)
-app.secret_key = "your-secret-key"
+# app.secret_key = "your-secret-key"
 
 
 app.register_blueprint(symptom_analyzer_bp)
