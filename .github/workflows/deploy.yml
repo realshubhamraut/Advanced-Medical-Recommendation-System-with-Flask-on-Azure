@@ -9,8 +9,13 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Setup Python 3.10
         uses: actions/setup-python@v4
@@ -32,10 +37,10 @@ jobs:
           zip -r ../deployment.zip .
           cd ..
       
-      - name: Check Deployment Package Size
+      - name: Check deployment package size
         run: ls -lh deployment.zip
 
-      - name: Upload Deployment Package to Azure Blob Storage
+      - name: Upload deployment package to Azure Blob Storage
         env:
           AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
         run: |
