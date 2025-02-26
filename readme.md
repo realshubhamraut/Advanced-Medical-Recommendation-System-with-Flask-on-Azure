@@ -31,7 +31,6 @@
 
 
 ---
-[![Build and deploy Python app to Azure Web App - advanced-medical-app](https://github.com/realshubhamraut/Advanced-Medical-Recommendation-System-with-Flask-on-Azure/actions/workflows/azure-webapps-python.yml/badge.svg)](https://github.com/realshubhamraut/Advanced-Medical-Recommendation-System-with-Flask-on-Azure/actions/workflows/azure-webapps-python.yml)
 
 **Advanced Medical Recommendation System with Flask on Azure** is an end‑to‑end solution designed to provide medical diagnostics and recommendations using machine learning and deep learning models.
 
