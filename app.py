@@ -1,4 +1,4 @@
-# main.py
+import logging
 from flask import Flask, render_template
 
 from symptom_analyzer import symptom_analyzer_bp
@@ -8,7 +8,6 @@ from medichat import medichat_bp
 
 app = Flask(__name__)
 app.secret_key = "your-secret-key"
-
 
 app.register_blueprint(symptom_analyzer_bp)
 app.register_blueprint(analyze_xray_bp)
@@ -20,7 +19,5 @@ def index():
     return render_template("index.html")
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     app.run(debug=True)
-
-
-
