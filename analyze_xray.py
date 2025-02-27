@@ -94,7 +94,7 @@ tumor_transform = transforms.Compose([
 
 brain_tumor_model = CNN_TUMOR()
 brain_tumor_weights_path = "models/brain_tumor/weights.pt"
-brain_tumor_model.load_state_dict(torch.load(brain_tumor_weights_path, map_location="cpu"))
+brain_tumor_model.load_state_dict(torch.load(brain_tumor_weights_path, map_location="cpu", weights_only=False))
 brain_tumor_model.eval()
 
 
