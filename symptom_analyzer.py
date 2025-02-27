@@ -207,3 +207,5 @@ if __name__ == '__main__':
     app.secret_key = "your-secret-key"
     app.register_blueprint(symptom_analyzer_bp)
     app.run(debug=True)
+
+##
