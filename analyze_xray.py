@@ -10,11 +10,11 @@ from flask import Blueprint, request, render_template
 import torchvision.transforms as transforms
 import google.generativeai as genai
 from dotenv import load_dotenv
-import markdown 
+import markdown
+from model_downloader import ensure_local_model
 
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
 
 class CNN_SKIN_CANCER(nn.Module):
     def __init__(self):
@@ -79,7 +79,6 @@ class PneumoniaResnet(nn.Module):
 import __main__
 __main__.PneumoniaResnet = PneumoniaResnet
 
-
 default_transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
@@ -91,19 +90,19 @@ tumor_transform = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-
+# Load brain tumor model (download weights if missing)
 brain_tumor_model = CNN_TUMOR()
-brain_tumor_weights_path = "models/brain_tumor/weights.pt"
+brain_tumor_weights_path = ensure_local_model("brain_tumor/weights.pt")
 brain_tumor_model.load_state_dict(torch.load(brain_tumor_weights_path, map_location="cpu", weights_only=False))
 brain_tumor_model.eval()
 
-
-skin_cancer_weights_path = "models/skin_cancer/skin_cancer.pt"
+# Load skin cancer model (download weights if missing)
+skin_cancer_weights_path = ensure_local_model("skin_cancer/skin_cancer.pt")
 skin_cancer_model = torch.jit.load(skin_cancer_weights_path, map_location="cpu")
 skin_cancer_model.eval()
 
-
-pneumonia_weights_path = "models/Pneumonia/weights.pth"
+# Load pneumonia model (download weights if missing)
+pneumonia_weights_path = ensure_local_model("Pneumonia/weights.pth")
 pneumonia_state = torch.load(pneumonia_weights_path, map_location="cpu")
 if isinstance(pneumonia_state, dict):
     target_state = PneumoniaResnet().state_dict()
@@ -113,7 +112,7 @@ if isinstance(pneumonia_state, dict):
         if new_key in target_state:
             new_state[new_key] = v
     if 'conv1.weight' in new_state and new_state['conv1.weight'].shape == torch.Size([64, 3, 7, 7]) \
-    and target_state['conv1.weight'].shape == torch.Size([16, 3, 3, 3]):
+       and target_state['conv1.weight'].shape == torch.Size([16, 3, 3, 3]):
         conv1_w = new_state['conv1.weight']
         conv1_w_adjusted = conv1_w[:16, :, 2:5, 2:5]
         new_state['conv1.weight'] = conv1_w_adjusted
@@ -172,7 +171,7 @@ I also dont want this in my response (I've consulted with Dr. [Assistant's Name]
 just jump right in with the important output part
 and also dont introduce the modality for eg dont write this (* **Modality:** The decoded image appears to be a high-resolution MRI scan of the brain. )
 and also dont even start with Given the base64 encoded image:
-because i just want the ouput dont even mention (suspected given the filename and symptoms)
+because i just want the output dont even mention (suspected given the filename and symptoms)
 and give descriptive explanations on findings from the image
 """
     model_gemini = genai.GenerativeModel("gemini-1.5-flash")
