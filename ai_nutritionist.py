@@ -3,6 +3,7 @@ import google.generativeai as genai
 import markdown
 from flask import Blueprint, request, render_template
 from PIL import Image
+import base64
 
 # Configure the generative AI client with the API key from environment variables
 genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
@@ -34,7 +35,8 @@ def input_image_setup(uploaded_file, img_file_buffer):
         ]
         return image_parts
     elif img_file_buffer is not None:
-        bytes_data = img_file_buffer.read()
+        # Decode base64 image
+        bytes_data = base64.b64decode(img_file_buffer)
         image_parts = [
             {
                 "mime_type": "image/jpeg",
