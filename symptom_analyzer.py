@@ -3,14 +3,15 @@ import numpy as np
 import pandas as pd
 import pickle
 import ast
+import os
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-
+from model_downloader import ensure_local_model
 
 symptom_analyzer_bp = Blueprint('symptom_analyzer_bp', __name__, template_folder='templates')
 
-
+# Load datasets
 sym_des = pd.read_csv("datasets/symtoms_df.csv")
 precautions = pd.read_csv("datasets/precautions_df.csv")
 workout = pd.read_csv("datasets/workout_df.csv")
@@ -18,7 +19,28 @@ description = pd.read_csv("datasets/description.csv")
 medications = pd.read_csv("datasets/medications.csv")
 diets = pd.read_csv("datasets/diets.csv")
 
-svc = pickle.load(open('models/svc.pkl', 'rb'))
+# Function to load model from local or cloud storage
+def load_model(model_name):
+    # First try the local path (for development environment)
+    local_path = os.path.join('models', model_name)
+    if os.path.exists(local_path):
+        print(f"Loading model from local path: {local_path}")
+        return pickle.load(open(local_path, 'rb'))
+    
+    # If not found locally, try to download from Azure blob storage (for production/Azure)
+    print(f"Local model not found at {local_path}. Attempting to download from Azure...")
+    cloud_path = ensure_local_model(model_name)
+    print(f"Loading model from downloaded path: {cloud_path}")
+    return pickle.load(open(cloud_path, 'rb'))
+
+# Load the model with fallback mechanism
+try:
+    svc = load_model('svc.pkl')
+    print("SVC model loaded successfully")
+except Exception as e:
+    print(f"Error loading model: {e}")
+    # You could add additional fallback logic here if needed
+    raise
 
 def helper(dis):
     # Get description as plain text.
@@ -207,5 +229,3 @@ if __name__ == '__main__':
     app.secret_key = "your-secret-key"
     app.register_blueprint(symptom_analyzer_bp)
     app.run(debug=True)
-
-##
