@@ -7,6 +7,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import PromptTemplate
 from langchain_huggingface import HuggingFaceEndpoint
 
+# Load environment variables from a .env file if present (useful for local development)
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 

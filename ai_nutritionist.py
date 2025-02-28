@@ -1,13 +1,11 @@
-from dotenv import load_dotenv
 import os
 import google.generativeai as genai
 import markdown
 from flask import Blueprint, request, render_template
 from PIL import Image
 
-load_dotenv()
-
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# Configure the generative AI client with the API key from environment variables
+genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
 
 ai_nutritionist_bp = Blueprint('ai_nutritionist', __name__, template_folder='templates')
 
