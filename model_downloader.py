@@ -1,13 +1,14 @@
 import os
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def download_from_azure(blob_relative_path, local_path):
-    # Retrieve the SAS token from an environment variable
     sas_token = os.getenv('AZURE_STORAGE_SAS_TOKEN')
     if not sas_token:
         raise Exception("SAS token not found in environment variables")
 
-    # Construct the full URL with the SAS token
     storage_account_name = "storageforhealthmodels"
     base_url = f"https://{storage_account_name}.blob.core.windows.net/models"
     url = f"{base_url}/{blob_relative_path}?{sas_token}"
@@ -22,10 +23,11 @@ def download_from_azure(blob_relative_path, local_path):
                     f.write(chunk)
         print(f"Downloaded {blob_relative_path} to {local_path}")
     else:
+        print(f"Failed to download {url}: HTTP {response.status_code}")
         raise Exception(f"Failed to download {url}: HTTP {response.status_code}")
 
 def ensure_local_model(model_relative_path):
-    local_path = os.path.join("/tmp/models", model_relative_path)
+    local_path = os.path.join("models", model_relative_path)
     if not os.path.exists(local_path):
         print(f"{local_path} not found locally. Downloading from Azure...")
         download_from_azure(model_relative_path, local_path)
