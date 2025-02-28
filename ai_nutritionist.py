@@ -10,6 +10,15 @@ genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
 ai_nutritionist_bp = Blueprint('ai_nutritionist', __name__, template_folder='templates')
 
 def get_gemini_response(input_text, image, prompt):
+    # Debugging: Print input values
+    print(f"Input Text: {input_text}")
+    print(f"Image: {image}")
+    print(f"Prompt: {prompt}")
+
+    # Check for empty inputs
+    if not input_text or not image or not prompt:
+        raise ValueError("One or more input parameters are empty. Please provide valid inputs.")
+
     model = genai.GenerativeModel('gemini-2.0-flash')
     response = model.generate_content([input_text, image[0], prompt])
     return response.text
@@ -78,10 +87,13 @@ Height: {height_feet} feet {height_inch} inches
 Weight: {weight} kg
             """
             image_data = input_image_setup(uploaded_file, None)
-            analysis = get_gemini_response(input_prompt, image_data, "")
-            # Convert Markdown to HTML using the 'extra' and 'tables' extensions.
-            analysis_html = markdown.markdown(analysis, extensions=['extra', 'tables'])
-            return render_template("ai_nutritionist.html", nutritional_analysis=analysis_html)
+            try:
+                analysis = get_gemini_response(input_prompt, image_data, "")
+                # Convert Markdown to HTML using the 'extra' and 'tables' extensions.
+                analysis_html = markdown.markdown(analysis, extensions=['extra', 'tables'])
+                return render_template("ai_nutritionist.html", nutritional_analysis=analysis_html)
+            except ValueError as e:
+                return render_template("ai_nutritionist.html", error=str(e))
     return render_template("ai_nutritionist.html")
 
 if __name__ == '__main__':
