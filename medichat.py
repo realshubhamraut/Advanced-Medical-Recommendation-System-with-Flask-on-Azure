@@ -15,17 +15,34 @@ load_dotenv(find_dotenv())
 
 medichat_bp = Blueprint('medichat', __name__, template_folder='templates')
 
-# Ensure the vectorstore is downloaded
+# Ensure the vectorstore directory exists
 VECTORSTORE_PATH = "models/vectorstore/db_faiss"
-ensure_local_model("vectorstore/db_faiss/index.faiss")
+os.makedirs(VECTORSTORE_PATH, exist_ok=True)
+
+# Download both required FAISS files from Azure Blob Storage
+try:
+    print("Downloading index.faiss from Azure...")
+    ensure_local_model("vectorstore/db_faiss/index.faiss")
+    print("Successfully downloaded index.faiss")
+    
+    print("Downloading index.pkl from Azure...")
+    ensure_local_model("vectorstore/db_faiss/index.pkl")
+    print("Successfully downloaded index.pkl")
+except Exception as e:
+    print(f"Error downloading vector store files: {str(e)}")
+    print(traceback.format_exc())
 
 _vectorstore = None
 def get_vectorstore():
     global _vectorstore
     if _vectorstore is None:
         try:
-            if not os.path.exists(VECTORSTORE_PATH):
-                raise FileNotFoundError(f"Vector store path not found: {VECTORSTORE_PATH}")
+            # Check if both required files exist
+            if not os.path.exists(os.path.join(VECTORSTORE_PATH, "index.faiss")):
+                raise FileNotFoundError(f"Vector store file not found: {VECTORSTORE_PATH}/index.faiss")
+            
+            if not os.path.exists(os.path.join(VECTORSTORE_PATH, "index.pkl")):
+                raise FileNotFoundError(f"Vector store file not found: {VECTORSTORE_PATH}/index.pkl")
                 
             print(f"Loading vector store from: {VECTORSTORE_PATH}")
             embedding_model = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')

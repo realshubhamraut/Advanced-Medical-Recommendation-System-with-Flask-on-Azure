@@ -65,7 +65,7 @@ Large model files are then hosted on Azure Blob Storage and dynamically download
 
 - #### Backend & API:
   
-  ` Python, Flask, GitHub Actions, Langchain, Huggingface`
+  ` Python, Flask (with blueprints), GitHub Actions, Langchain, Huggingface`
 
 - #### Deep Learning & Model Inference: 
   

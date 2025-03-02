@@ -28,6 +28,7 @@ def setup_models():
         'skin_cancer/skin_cancer.pt',
         'skin_cancer/weights.pt',
         'vectorstore/db_faiss/index.faiss',
+        'vectorstore/db_faiss/index.pkl',
     ]
 
     try:
