@@ -1,19 +1,19 @@
 import os
 import google.generativeai as genai
 import markdown
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, jsonify
 from PIL import Image
 import base64
+import io
 
 genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
 
 ai_nutritionist_bp = Blueprint('ai_nutritionist', __name__, template_folder='templates')
 
 def get_gemini_response(input_text, image, prompt=None):
-    print(f"Input Text: {input_text}")
-    print(f"Image: {image}")
-    print(f"Prompt: {prompt}")
-
+    print(f"Input Text length: {len(input_text)}")
+    print(f"Image provided: {image is not None}")
+    
     if not input_text or not image:
         raise ValueError("Input text and image are required. Please provide valid inputs.")
 
@@ -29,36 +29,87 @@ def get_gemini_response(input_text, image, prompt=None):
     response = model.generate_content(content)
     return response.text
 
-def input_image_setup(uploaded_file, img_file_buffer):
-    if uploaded_file is not None:
-        bytes_data = uploaded_file.read()
-        image_parts = [
-            {
-                "mime_type": uploaded_file.content_type,
-                "data": bytes_data
-            }
-        ]
-        return image_parts
-    elif img_file_buffer is not None:
-        # Decode base64 image
-        bytes_data = base64.b64decode(img_file_buffer)
-        image_parts = [
-            {
-                "mime_type": "image/jpeg",
-                "data": bytes_data
-            }
-        ]
-        return image_parts
-    else:
-        raise FileNotFoundError("No file uploaded")
+def input_image_setup(uploaded_file=None, img_file_buffer=None):
+    try:
+        if uploaded_file is not None:
+            # Compress the image from file upload
+            image = Image.open(uploaded_file)
+            print(f"Original image size: {image.size}")
+            
+            # Convert to RGB (remove alpha channel if present)
+            image = image.convert("RGB")
+            
+            # Resize if too large
+            max_size = (1024, 1024)
+            if image.width > max_size[0] or image.height > max_size[1]:
+                image.thumbnail(max_size, Image.LANCZOS)
+                print(f"Resized to: {image.size}")
+            
+            # Compress the image
+            buffer = io.BytesIO()
+            image.save(buffer, format="JPEG", quality=50)  # Lower quality for smaller size
+            bytes_data = buffer.getvalue()
+            print(f"Compressed size: {len(bytes_data)} bytes")
+            
+            image_parts = [
+                {
+                    "mime_type": "image/jpeg",
+                    "data": bytes_data
+                }
+            ]
+            return image_parts
+            
+        elif img_file_buffer is not None:
+            # Handle base64 image from camera
+            # Remove the header if present (e.g., "data:image/jpeg;base64,")
+            if "," in img_file_buffer:
+                img_file_buffer = img_file_buffer.split(",")[1]
+            
+            # Decode base64 image
+            bytes_data = base64.b64decode(img_file_buffer)
+            image = Image.open(io.BytesIO(bytes_data))
+            print(f"Original camera image size: {image.size}")
+            
+            # Convert to RGB
+            image = image.convert("RGB")
+            
+            # Resize if too large
+            max_size = (1024, 1024)
+            if image.width > max_size[0] or image.height > max_size[1]:
+                image.thumbnail(max_size, Image.LANCZOS)
+                print(f"Resized to: {image.size}")
+            
+            # Compress the image
+            buffer = io.BytesIO()
+            image.save(buffer, format="JPEG", quality=50)
+            bytes_data = buffer.getvalue()
+            print(f"Compressed size: {len(bytes_data)} bytes")
+            
+            image_parts = [
+                {
+                    "mime_type": "image/jpeg",
+                    "data": bytes_data
+                }
+            ]
+            return image_parts
+        else:
+            raise FileNotFoundError("No image provided")
+    except Exception as e:
+        import traceback
+        print(f"Error processing image: {str(e)}")
+        print(traceback.format_exc())
+        raise
 
 @ai_nutritionist_bp.route('/al-nutritionist', methods=['GET', 'POST'])
 def nutritionist():
     if request.method == 'POST':
         try:
             uploaded_file = request.files.get('meal_image')
-            if not uploaded_file or uploaded_file.filename == '':
-                return render_template("ai_nutritionist.html", error="No file selected. Please upload an image.")
+            camera_image = request.form.get('camera_image')
+            
+            # Check if either file upload or camera image is provided
+            if (not uploaded_file or uploaded_file.filename == '') and not camera_image:
+                return render_template("ai_nutritionist.html", error="No image provided. Please upload an image or take a picture.")
             
             age = request.form.get('age')
             gender = request.form.get('gender')
@@ -106,8 +157,13 @@ def nutritionist():
             Weight: {weight} kg
             """
             
-            print(f"Processing image: {uploaded_file.filename}")
-            image_data = input_image_setup(uploaded_file, None)
+            # Process either uploaded file or camera image
+            if uploaded_file and uploaded_file.filename != '':
+                print(f"Processing uploaded image: {uploaded_file.filename}")
+                image_data = input_image_setup(uploaded_file=uploaded_file)
+            else:
+                print("Processing camera image")
+                image_data = input_image_setup(img_file_buffer=camera_image)
             
             print("Calling Gemini API...")
             analysis = get_gemini_response(input_prompt, image_data)

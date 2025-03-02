@@ -1,198 +1,328 @@
 {% extends "base.html" %}
+
 {% block title %}AI Nutritionist{% endblock %}
 
 {% block extra_head %}
-  <style>
-    /* Custom styling for the file input container with solid border */
-    .custom-file {
-      border: 2px solid #007bff;
-      border-radius: 5px;
-      padding: 20px;
-      background-color: #f8f9fa;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    .custom-file:hover {
-      border-color: #0056b3;
-      box-shadow: 0 0 5px rgba(0,123,255,0.5);
-    }
-    /* Hide the native file input and overlay it on the container */
-    .custom-file-input {
-      position: absolute;
-      top: 0;
-      left: 0;
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
-    }
-    /* Style the custom file label */
-    .custom-file-label {
-      font-weight: bold;
-      pointer-events: none;
-      margin-bottom: 0;
-    }
-    /* Style the analysis output box and any contained tables */
-    .analysis-output {
-      background: #e9ecef;
-      padding: 15px;
-      border-radius: 5px;
-      font-family: monospace;
-      /* Make the output box broader */
-      max-width: 100%;
-      overflow-x: auto;
-    }
-    .analysis-output table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 10px 0;
-    }
-    .analysis-output th, .analysis-output td {
-      border: 1px solid #333;
-      padding: 8px;
-      text-align: left;
-    }
-    .analysis-output th {
-      background-color: #007bff;
-      color: #fff;
-    }
-    /* Error message styling */
-    .error-message {
-      background-color: #f8d7da;
-      color: #721c24;
-      padding: 12px;
-      border: 1px solid #f5c6cb;
-      border-radius: 4px;
-      margin-bottom: 20px;
-    }
-  </style>
+<style>
+  .jumbotron-custom {
+    background: #007bff;
+    color: #fff;
+    padding: 50px 0;
+    border-radius: 10px;
+    margin-top: 30px;
+    text-align: center;
+  }
+  .card-custom {
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+  }
+  .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+  #videoContainer {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 20px;
+    display: none;
+  }
+  #cameraPreview {
+    width: 100%;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+  }
+  #captureButton {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  #previewContainer {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 20px;
+    display: none;
+  }
+  #imagePreview {
+    width: 100%;
+    border: 2px dashed #28a745;
+    border-radius: 5px;
+    padding: 5px;
+  }
+  .camera-options {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .error-message {
+    color: #dc3545;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid #dc3545;
+    background-color: #f8d7da;
+  }
+  .nutritional-analysis table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  .nutritional-analysis table, th, td {
+    border: 1px solid #dee2e6;
+  }
+  .nutritional-analysis th {
+    background-color: #007bff;
+    color: white;
+    padding: 8px;
+  }
+  .nutritional-analysis td {
+    padding: 8px;
+  }
+  .nutritional-analysis tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-  <div class="jumbotron text-center" style="background: #007bff; color: #fff; border-radius: 10px; padding: 50px 0; margin-top: 30px;">
-    <h1 class="display-4">Nutritional Analysis</h1>
-    <p class="lead">Upload an image of your meal and enter your details to get a nutritional analysis.</p>
+  <div class="jumbotron jumbotron-custom">
+    <h1 class="display-4">AI Nutritionist</h1>
+    <p class="lead">Upload an image of your meal for nutritional analysis</p>
   </div>
   
-  <!-- Display error messages if any -->
   {% if error %}
   <div class="error-message">
     {{ error }}
   </div>
   {% endif %}
   
-  <div class="card shadow-sm mb-4">
+  <div class="card card-custom">
     <div class="card-body">
-      <form action="/al-nutritionist" method="post" enctype="multipart/form-data">
-        <!-- Upload Method Section -->
-        <div class="form-group">
-          <label for="uploadMethod"><strong>Choose Upload Method:</strong></label><br>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="upload_method" id="uploadPhoto" value="upload" checked>
-            <label class="form-check-label" for="uploadPhoto">Upload Photo</label>
+      <form id="nutritionForm" method="POST" action="{{ url_for('ai_nutritionist.nutritionist') }}" enctype="multipart/form-data">
+        <!-- Camera and file upload options -->
+        <div class="camera-options">
+          <button type="button" id="openCameraBtn" class="btn btn-primary mr-2">Open Camera</button>
+          <label for="meal_image" class="btn btn-outline-primary mb-0">Upload Image</label>
+          <input type="file" id="meal_image" name="meal_image" accept="image/*" style="display: none;" onchange="handleFileSelect(this)">
+        </div>
+        
+        <!-- Camera preview container -->
+        <div id="videoContainer">
+          <video id="cameraPreview" autoplay playsinline></video>
+          <button type="button" id="captureButton" class="btn btn-danger">Take Picture</button>
+        </div>
+        
+        <!-- Image preview container -->
+        <div id="previewContainer">
+          <img id="imagePreview" src="" alt="Selected image preview">
+          <button type="button" id="resetButton" class="btn btn-outline-secondary mt-2">Reset Image</button>
+        </div>
+        
+        <!-- Hidden input for camera image data -->
+        <input type="hidden" id="camera_image" name="camera_image">
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="age">Age</label>
+              <input type="number" class="form-control" id="age" name="age" min="1" max="120" required>
+            </div>
           </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="upload_method" id="takePicture" value="camera">
-            <label class="form-check-label" for="takePicture">Take a Picture</label>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="gender">Gender</label>
+              <select class="form-control" id="gender" name="gender" required>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="physical_intensity">Physical Activity</label>
+              <select class="form-control" id="physical_intensity" name="physical_intensity" required>
+                <option value="">Select Activity Level</option>
+                <option value="Sedentary">Sedentary</option>
+                <option value="Light">Light Active</option>
+                <option value="Moderate">Moderately Active</option>
+                <option value="Very">Very Active</option>
+                <option value="Extra">Extra Active</option>
+              </select>
+            </div>
           </div>
         </div>
         
-        <!-- Meal Image Input -->
-        <div class="form-group position-relative">
-          <label for="mealImage">Meal Image <small class="text-muted">(JPEG, PNG)</small>:</label>
-          <div class="custom-file">
-            <input id="mealImage" name="meal_image" type="file" class="custom-file-input" accept="image/jpeg, image/png" required>
-            <span class="custom-file-label">Choose file</span>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="height_feet">Height (feet)</label>
+              <input type="number" class="form-control" id="height_feet" name="height_feet" min="1" max="8" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="height_inch">Height (inches)</label>
+              <input type="number" class="form-control" id="height_inch" name="height_inch" min="0" max="11" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="weight">Weight (kg)</label>
+              <input type="number" class="form-control" id="weight" name="weight" min="1" max="500" required>
+            </div>
           </div>
         </div>
         
-        <!-- Additional Details -->
-        <div class="form-row">
-          <div class="form-group col-md-3">
-            <label for="age">Age</label>
-            <input id="age" name="age" type="number" class="form-control" placeholder="Enter your age" required>
-          </div>
-          <div class="form-group col-md-3">
-            <label for="gender">Gender</label>
-            <select id="gender" name="gender" class="form-control" required>
-              <option value="" disabled selected>Select gender</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="form-group col-md-3">
-            <label for="physical_intensity">Physical Intensity</label>
-            <select id="physical_intensity" name="physical_intensity" class="form-control" required>
-              <option value="" disabled selected>Select intensity</option>
-              <option>Basal Metabolic Rate (BMR)</option>
-              <option>Sedentary: little or no exercise</option>
-              <option>Light: exercise 1-3 times/week</option>
-              <option>Moderate: exercise 4-5 times/week</option>
-              <option>Active: daily exercise or intense exercise 3-4 times/week</option>
-              <option>Very Active: intense exercise 6-7 times/week</option>
-              <option>Extra Active: very intense exercise daily or physical job</option>
-            </select>
-          </div>
-          <div class="form-group col-md-3">
-            <label for="weight">Weight (kg)</label>
-            <input id="weight" name="weight" type="number" step="0.1" class="form-control" placeholder="e.g., 70" required>
-          </div>
-        </div>
-        
-        <!-- Height Inputs -->
-        <div class="form-row">
-          <div class="form-group col-md-3">
-            <label for="height_feet">Height (Feet)</label>
-            <input id="height_feet" name="height_feet" type="number" class="form-control" placeholder="Feet" required>
-          </div>
-          <div class="form-group col-md-3">
-            <label for="height_inch">Height (Inches)</label>
-            <input id="height_inch" name="height_inch" type="number" class="form-control" placeholder="Inches" required>
-          </div>
-        </div>
-        
-        <button type="submit" class="btn btn-primary">Analyze Meal ‎ ‎  🍛</button>
+        <button type="submit" class="btn btn-success btn-lg btn-block" id="analyzeBtn">Analyze Meal</button>
       </form>
     </div>
   </div>
   
   {% if nutritional_analysis %}
-    <div class="card shadow-sm mb-4">
-      <div class="card-header">
-        Nutritional Analysis:
-      </div>
-      <div class="card-body">
-        <div class="analysis-output">
-          {{ nutritional_analysis|safe }}
-        </div>
-      </div>
+  <div class="card card-custom">
+    <div class="card-header bg-success text-white">
+      <h3 class="mb-0">Nutritional Analysis</h3>
     </div>
+    <div class="card-body nutritional-analysis">
+      {{ nutritional_analysis|safe }}
+    </div>
+  </div>
   {% endif %}
 </div>
-{% endblock %}
 
-{% block extra_scripts %}
 <script>
-  document.addEventListener('DOMContentLoaded', function(){
-    var mealImageInput = document.getElementById('mealImage');
-    mealImageInput.addEventListener('change', function(){
-      var fileName = this.value.split('\\').pop();
-      this.parentElement.querySelector('.custom-file-label').textContent = fileName || "Choose file";
-    });
-    
-    var uploadMethods = document.querySelectorAll('input[name="upload_method"]');
-    uploadMethods.forEach(function(radio) {
-      radio.addEventListener('change', function(){
-        if(this.value === 'camera'){
-          mealImageInput.setAttribute('capture', 'environment');
-        } else {
-          mealImageInput.removeAttribute('capture');
+  // Global variables
+  let stream = null;
+  let imageSelected = false;
+
+  // DOM elements
+  const openCameraBtn = document.getElementById('openCameraBtn');
+  const videoContainer = document.getElementById('videoContainer');
+  const cameraPreview = document.getElementById('cameraPreview');
+  const captureButton = document.getElementById('captureButton');
+  const previewContainer = document.getElementById('previewContainer');
+  const imagePreview = document.getElementById('imagePreview');
+  const resetButton = document.getElementById('resetButton');
+  const cameraImageInput = document.getElementById('camera_image');
+  const mealImageInput = document.getElementById('meal_image');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  
+  // Handle file selection
+  function handleFileSelect(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        imagePreview.src = e.target.result;
+        previewContainer.style.display = 'block';
+        imageSelected = true;
+        
+        // Clear camera input
+        cameraImageInput.value = '';
+        
+        // Hide camera if open
+        if (stream) {
+          stopCamera();
         }
-      });
-    });
+      };
+      
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+  
+  // Open camera
+  openCameraBtn.addEventListener('click', async () => {
+    try {
+      // Close camera if already open
+      if (stream) {
+        stopCamera();
+        return;
+      }
+      
+      // Reset file input
+      mealImageInput.value = '';
+      
+      // Get camera stream with maximum resolution for mobile devices
+      const constraints = {
+        video: {
+          facingMode: 'environment', // Use back camera
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+      
+      stream = await navigator.mediaDevices.getUserMedia(constraints);
+      cameraPreview.srcObject = stream;
+      videoContainer.style.display = 'block';
+      previewContainer.style.display = 'none';
+      
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+      alert("Cannot access camera. Please check your permissions or try using file upload.");
+    }
+  });
+  
+  // Capture photo
+  captureButton.addEventListener('click', () => {
+    if (!stream) return;
+    
+    // Create canvas to capture frame
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    
+    // Set canvas dimensions to match video
+    canvas.width = cameraPreview.videoWidth;
+    canvas.height = cameraPreview.videoHeight;
+    
+    // Draw video frame to canvas
+    context.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
+    
+    // Get image data as base64
+    const imageData = canvas.toDataURL('image/jpeg', 0.8); // 0.8 quality for compression
+    
+    // Display preview
+    imagePreview.src = imageData;
+    previewContainer.style.display = 'block';
+    
+    // Store data in hidden input
+    cameraImageInput.value = imageData;
+    
+    // Stop camera
+    stopCamera();
+    
+    imageSelected = true;
+  });
+  
+  // Stop camera stream
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+      videoContainer.style.display = 'none';
+    }
+  }
+  
+  // Reset image
+  resetButton.addEventListener('click', () => {
+    imagePreview.src = '';
+    previewContainer.style.display = 'none';
+    mealImageInput.value = '';
+    cameraImageInput.value = '';
+    imageSelected = false;
+  });
+  
+  // Form validation
+  document.getElementById('nutritionForm').addEventListener('submit', (e) => {
+    if (!imageSelected && !mealImageInput.files[0] && !cameraImageInput.value) {
+      e.preventDefault();
+      alert('Please upload an image or take a picture');
+    }
   });
 </script>
 {% endblock %}

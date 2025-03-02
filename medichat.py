@@ -9,25 +9,27 @@ from langchain_core.prompts import PromptTemplate
 from langchain_huggingface import HuggingFaceEndpoint
 
 from dotenv import load_dotenv, find_dotenv
+from model_downloader import ensure_local_model
+
 load_dotenv(find_dotenv())
 
 medichat_bp = Blueprint('medichat', __name__, template_folder='templates')
 
-DB_FAISS_PATH = "vectorstore/db_faiss"
-if not os.path.exists(DB_FAISS_PATH):
-    DB_FAISS_PATH = "models/vectorstore/db_faiss"
+# Ensure the vectorstore is downloaded
+VECTORSTORE_PATH = "models/vectorstore/db_faiss"
+ensure_local_model("vectorstore/db_faiss/index.faiss")
 
 _vectorstore = None
 def get_vectorstore():
     global _vectorstore
     if _vectorstore is None:
         try:
-            if not os.path.exists(DB_FAISS_PATH):
-                raise FileNotFoundError(f"Vector store path not found: {DB_FAISS_PATH}")
+            if not os.path.exists(VECTORSTORE_PATH):
+                raise FileNotFoundError(f"Vector store path not found: {VECTORSTORE_PATH}")
                 
-            print(f"Loading vector store from: {DB_FAISS_PATH}")
+            print(f"Loading vector store from: {VECTORSTORE_PATH}")
             embedding_model = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
-            _vectorstore = FAISS.load_local(DB_FAISS_PATH, embedding_model, allow_dangerous_deserialization=True)
+            _vectorstore = FAISS.load_local(VECTORSTORE_PATH, embedding_model, allow_dangerous_deserialization=True)
             print("Vector store loaded successfully")
         except Exception as e:
             print(f"Error loading vector store: {str(e)}")

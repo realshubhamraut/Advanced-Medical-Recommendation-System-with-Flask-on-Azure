@@ -27,6 +27,7 @@ def setup_models():
         'Pneumonia/weights.pth',
         'skin_cancer/skin_cancer.pt',
         'skin_cancer/weights.pt',
+        'vectorstore/db_faiss/index.faiss',
     ]
 
     try:
