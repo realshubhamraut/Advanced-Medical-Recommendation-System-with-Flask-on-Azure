@@ -56,6 +56,32 @@
     .sources-table tr:hover {
       background-color: #f1f1f1;
     }
+    
+    /* Fix for table text wrapping */
+    .table td, .table th {
+      word-wrap: break-word;
+      max-width: 300px; /* Maximum width for all cells */
+    }
+    
+    /* Source column specific styling */
+    .source-column {
+      max-width: 250px;
+      word-break: break-word;
+      white-space: normal; /* Allows text wrapping */
+    }
+    
+    /* Responsive table */
+    @media (max-width: 768px) {
+      .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+      }
+      
+      .table td, .table th {
+        max-width: none; /* Remove max-width on mobile */
+      }
+    }
   </style>
 {% endblock %}
 
@@ -142,28 +168,30 @@
       Source Documents Metadata
     </div>
     <div class="card-body">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Document ID</th>
-            <th>Source</th>
-            <th>Producer</th>
-            <th>Author</th>
-            <th>Page</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for doc in docs %}
-          <tr>
-            <td>{{ doc.id if doc.id is defined else 'N/A' }}</td>
-            <td>{{ doc.metadata.source if doc.metadata.get('source') else 'N/A' }}</td>
-            <td>{{ doc.metadata.producer if doc.metadata.get('producer') else 'N/A' }}</td>
-            <td>{{ doc.metadata.author if doc.metadata.get('author') else 'N/A' }}</td>
-            <td>{{ doc.metadata.page if doc.metadata.get('page') else 'N/A' }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Document ID</th>
+              <th>Source</th>
+              <th>Producer</th>
+              <th>Author</th>
+              <th>Page</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for doc in docs %}
+            <tr>
+              <td>{{ doc.id if doc.id is defined else 'N/A' }}</td>
+              <td class="source-column">{{ doc.metadata.source if doc.metadata.get('source') else 'N/A' }}</td>
+              <td>{{ doc.metadata.producer if doc.metadata.get('producer') else 'N/A' }}</td>
+              <td>{{ doc.metadata.author if doc.metadata.get('author') else 'N/A' }}</td>
+              <td>{{ doc.metadata.page if doc.metadata.get('page') else 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   {% endif %}

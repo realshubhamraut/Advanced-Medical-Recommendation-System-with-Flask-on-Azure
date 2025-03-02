@@ -3,10 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}Advanced Medical Recommendation System{% endblock %}</title>
+  
+  <!-- Favicon links with cache-busting parameter -->
+  <link rel="icon" href="{{ url_for('static', filename='docs/favicon.ico') }}?v=2" type="image/x-icon">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='docs/favicon.ico') }}?v=2" type="image/x-icon">
+  
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Serif:wght@300;400;500;600;700&display=swap">
   <style>
+    /* Your existing styles */
     body { 
       background-image: url("{{ url_for('static', filename='docs/background.png') }}");
       background-size: cover;
@@ -18,10 +24,10 @@
       font-family: 'Roboto Serif', serif;
     }
     .navbar {
-  margin-bottom: 20px;
-  background-color: #caeea5; 
-  border-bottom: 2px solid #ccc;
-}
+      margin-bottom: 20px;
+      background-color: #caeea5; 
+      border-bottom: 2px solid #ccc;
+    }
     .navbar-nav .nav-item {
       border-right: 1px solid #ccc;
       margin-right: 10px;

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 import os
+import traceback
 
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.chains import RetrievalQA
@@ -13,13 +14,25 @@ load_dotenv(find_dotenv())
 medichat_bp = Blueprint('medichat', __name__, template_folder='templates')
 
 DB_FAISS_PATH = "vectorstore/db_faiss"
+if not os.path.exists(DB_FAISS_PATH):
+    DB_FAISS_PATH = "models/vectorstore/db_faiss"
 
 _vectorstore = None
 def get_vectorstore():
     global _vectorstore
     if _vectorstore is None:
-        embedding_model = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
-        _vectorstore = FAISS.load_local(DB_FAISS_PATH, embedding_model, allow_dangerous_deserialization=True)
+        try:
+            if not os.path.exists(DB_FAISS_PATH):
+                raise FileNotFoundError(f"Vector store path not found: {DB_FAISS_PATH}")
+                
+            print(f"Loading vector store from: {DB_FAISS_PATH}")
+            embedding_model = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
+            _vectorstore = FAISS.load_local(DB_FAISS_PATH, embedding_model, allow_dangerous_deserialization=True)
+            print("Vector store loaded successfully")
+        except Exception as e:
+            print(f"Error loading vector store: {str(e)}")
+            print(traceback.format_exc())
+            raise
     return _vectorstore
 
 def set_custom_prompt(custom_prompt_template):
@@ -88,6 +101,8 @@ def medichat():
                 session.modified = True
             except Exception as e:
                 error_msg = f"Error: {str(e)}"
+                print(error_msg)
+                print(traceback.format_exc())
                 flash(error_msg, "error")
                 conv_history.append({"role": "assistant", "content": error_msg})
                 session["messages"] = conv_history
