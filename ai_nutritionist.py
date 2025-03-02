@@ -5,18 +5,16 @@ from flask import Blueprint, request, render_template
 from PIL import Image
 import base64
 
-# Configure the generative AI client with the API key from environment variables
 genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
 
 ai_nutritionist_bp = Blueprint('ai_nutritionist', __name__, template_folder='templates')
 
 def get_gemini_response(input_text, image, prompt):
-    # Debugging: Print input values
     print(f"Input Text: {input_text}")
     print(f"Image: {image}")
     print(f"Prompt: {prompt}")
 
-    # Check for empty inputs
+
     if not input_text or not image or not prompt:
         raise ValueError("One or more input parameters are empty. Please provide valid inputs.")
 

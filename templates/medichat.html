@@ -26,6 +26,36 @@
       white-space: pre-wrap;
       font-family: monospace;
     }
+    .sources-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #007bff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    .sources-title {
+      color: #007bff;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .sources-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .sources-table th,
+    .sources-table td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+    .sources-table th {
+      border-bottom: 2px solid #007bff;
+      color: #007bff;
+    }
+    .sources-table tr:hover {
+      background-color: #f1f1f1;
+    }
   </style>
 {% endblock %}
 
@@ -33,7 +63,52 @@
 <div class="container">
   <div class="jumbotron jumbotron-custom">
     <h1 class="display-4">MediChat</h1>
-    <p class="lead">Interact with our medical chatbot and get insights from your documents.</p>
+    <p class="lead">Interact with medical chatbot and get insights from top encyclopedia's.</p>
+  </div>
+  
+  <div class="sources-box">
+    <div class="sources-title">Sources included: (you are chatting with these books which are trained on faiss vector database)</div>
+    <table class="sources-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Publisher</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>The Merck Manual of Diagnosis and Therapy</td>
+          <td>Multiple Authors</td>
+          <td>Merck & Co., Inc.</td>
+        </tr>
+        <tr>
+          <td>The Gale Encyclopedia of Medicine (Second Edition)</td>
+          <td>Multiple Authors</td>
+          <td>Gale Group</td>
+        </tr>
+        <tr>
+          <td>The Encyclopedia of Mental Health</td>
+          <td>Jan Fawcett</td>
+          <td>Facts on File</td>
+        </tr>
+        <tr>
+          <td>Oxford Handbook of Clinical Medicine</td>
+          <td>Murray Longmore</td>
+          <td>Oxford University Press</td>
+        </tr>
+        <tr>
+          <td>American Medical Association Encyclopedia of Medicine</td>
+          <td>Multiple Authors</td>
+          <td>Random House</td>
+        </tr>
+        <tr>
+          <td>Retrain Your Brain: Cognitive Behavioral Therapy in 7 Weeks</td>
+          <td>Seth J. Gillihan, PhD</td>
+          <td>Althea Press</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   
   <div class="card card-custom mb-4">
@@ -100,7 +175,7 @@
     </div>
     <div class="card-body">
       <ul class="list-group">
-        {% for msg in messages %}
+        {% for msg in messages|reverse %}
           <li class="list-group-item">
             <strong>{{ msg.role|capitalize }}:</strong> {{ msg.content }}
           </li>

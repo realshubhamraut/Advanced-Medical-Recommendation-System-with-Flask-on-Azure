@@ -5,13 +5,23 @@
   <title>{% block title %}Advanced Medical Recommendation System{% endblock %}</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Serif:wght@300;400;500;600;700&display=swap">
   <style>
-    body { background: #f8f9fa; }
-    .navbar {
-      margin-bottom: 20px;
-      background-color: #caeea5; 
-      border-bottom: 2px solid #ccc;
+    body { 
+      background-image: url("{{ url_for('static', filename='docs/background.png') }}");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      position: relative;
+      color: #333;
+      font-family: 'Roboto Serif', serif;
     }
+    .navbar {
+  margin-bottom: 20px;
+  background-color: #caeea5; 
+  border-bottom: 2px solid #ccc;
+}
     .navbar-nav .nav-item {
       border-right: 1px solid #ccc;
       margin-right: 10px;
@@ -22,7 +32,7 @@
       margin-right: 0;
     }
     .jumbotron { 
-      background: #007bff; 
+      background: #7cd2f7; 
       color: #fff; 
       padding: 2rem; 
       margin-top: 2rem; 
@@ -39,6 +49,13 @@
     .divider { 
       margin: 2rem 0; 
       border-top: 2px solid #ddd; 
+    }
+    
+    /* Add card styling to ensure content is readable over background */
+    .card {
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
   </style>
   {% block extra_head %}{% endblock %}
