@@ -1,7 +1,7 @@
 # Advanced Medical Recommendation System with Flask on Azure ⚕️
- <strong>with deep learning<strong>
+ <strong>with deep learning</strong>
 
-<div style="display: flex; gap: 10px;">
+<div style="display: flex; gap: 10px; flex-wrap: wrap;">
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
   </a>
@@ -11,6 +11,9 @@
   <a href="https://pytorch.org/">
     <img src="https://img.shields.io/badge/-PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white" alt="PyTorch">
   </a>
+<a href="https://python.langchain.com/">
+  <img src="https://img.shields.io/badge/-LangChain-65B54C?style=flat-square&logo=chainlink&logoColor=white" alt="LangChain">
+</a>
   <a href="https://joblib.readthedocs.io/">
     <img src="https://img.shields.io/badge/-joblib-FF9900?style=flat-square&logo=python&logoColor=white" alt="Joblib">
   </a>
@@ -20,14 +23,31 @@
   <a href="https://azure.microsoft.com/">
     <img src="https://img.shields.io/badge/-Azure-0078D4?style=flat-square&logo=microsoft-azure&logoColor=white" alt="Azure">
   </a>
+  <a href="https://azure.microsoft.com/">
+    <img src="https://img.shields.io/badge/-Azure%20Blob%20Storage-0078D4?style=flat-square&logo=microsoft-azure&logoColor=white" alt="Azure Blob Storage">
+  </a>
+<a href="https://huggingface.co/">
+  <img src="https://img.shields.io/badge/-Hugging%20Face-FFD21E?style=flat-square&logo=huggingface&logoColor=black" alt="Hugging Face">
+</a>
   <a href="https://docs.github.com/en/actions">
     <img src="https://img.shields.io/badge/-GitHub_Actions-2088FF?style=flat-square&logo=github-actions&logoColor=white" alt="GitHub Actions">
   </a>
   <a href="https://git-lfs.github.com/">
-    <img src="https://img.shields.io/badge/-Git%20LFS-F05133?style=flat-square&logo=git-lfs&logoColor=white" alt="Git LFS">
+    <img src="https://img.shields.io/badge/-Git%20LFS-F05133?style=flat-square&logo=git&logoColor=white" alt="Git LFS">
+  </a>
+  <a href="https://github.com/facebookresearch/faiss">
+    <img src="https://img.shields.io/badge/-FAISS-3b5998?style=flat-square&logo=facebook&logoColor=white" alt="FAISS">
+  </a>
+  <a href="https://www.docker.com/">
+    <img src="https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker">
+  </a>
+  <a href="https://azure.microsoft.com/en-us/products/app-service/">
+    <img src="https://img.shields.io/badge/-Azure%20App%20Service-0078D7?style=flat-square&logo=microsoft-azure&logoColor=white" alt="Azure App Service">
+  </a>
+  <a href="https://www.pinecone.io/learn/retrieval-augmented-generation/">
+    <img src="https://img.shields.io/badge/-RAG-4D4D4D?style=flat-square&logo=openai&logoColor=white" alt="RAG (Retrieval Augmented Generation)">
   </a>
 </div>
-
 
 
 ---
@@ -39,13 +59,13 @@ The system comprises multiple modules including X-ray analysis, symptom analysis
 Large model files are then hosted on Azure Blob Storage and dynamically downloaded at runtime. Deployment is fully automated via GitHub Actions to Azure App Service.
 
 
-[VIEW LIVE](https://advanced-medical-app.azurewebsites.net)
+[VIEW LIVE](https://azureflaskmedicalapp.azurewebsites.net/)
 
 ## Technology Stack
 
 - #### Backend & API:
   
-  ` Python, Flask, GitHub Actions `
+  ` Python, Flask, GitHub Actions, Langchain, Huggingface`
 
 - #### Deep Learning & Model Inference: 
   
@@ -53,11 +73,11 @@ Large model files are then hosted on Azure Blob Storage and dynamically download
 
 - #### Data & Storage:
   
-    `Azure Blob Storage for models, Vector Storage for Document RAG based Query (context based)`
+    `Azure Blob Storage for models, Faiss Vector Storage for Document RAG based Query (custom context based)`
 
 - #### Frontend & Templates:
   
-  `TML with Bootstrap, jQuery UI, CSS`
+  `HTML with Bootstrap, jQuery UI, CSS`
 
 - #### Deployment & Cloud Infrastructure:
   
@@ -159,4 +179,5 @@ and finally issues and improvements / pull requests are always welcomed.
 Important: This project is provided for experimental purposes only. and I have only designed it in a way to explore the possibilities of integrating healthcare with AI. Always seek the advice of qualified medical professionals regarding any medical diagnosis or treatment. Do not solely rely on the outputs of this repository for clinical decisions.
 
 ---
-*connect with me on [LinkedIn](https://www.linkedin.com/in/contactshubhamraut/) to develop something cool.*
+
+*connect with me on [<img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white" height="22" align="center" />](https://www.linkedin.com/in/contactshubhamraut/) to develop something cool.*

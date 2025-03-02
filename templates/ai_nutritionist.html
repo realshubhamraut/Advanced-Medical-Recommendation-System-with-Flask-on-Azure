@@ -57,6 +57,15 @@
       background-color: #007bff;
       color: #fff;
     }
+    /* Error message styling */
+    .error-message {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border: 1px solid #f5c6cb;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
   </style>
 {% endblock %}
 
@@ -66,6 +75,13 @@
     <h1 class="display-4">Nutritional Analysis</h1>
     <p class="lead">Upload an image of your meal and enter your details to get a nutritional analysis.</p>
   </div>
+  
+  <!-- Display error messages if any -->
+  {% if error %}
+  <div class="error-message">
+    {{ error }}
+  </div>
+  {% endif %}
   
   <div class="card shadow-sm mb-4">
     <div class="card-body">
